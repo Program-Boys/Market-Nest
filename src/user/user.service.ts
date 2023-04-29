@@ -5,7 +5,7 @@ import { UserBodyDTO } from './dto/user.dto';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
-import { MP_SELECT_USER } from './user.utils';
+import { MP_SELECT_USER } from '../utils/queries/user.utils';
 
 @Injectable()
 export class UserServices {
