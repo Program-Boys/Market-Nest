@@ -29,4 +29,16 @@ export class UserController {
 
     return res.status(200).json(user)
   }
+
+  @Delete('/:id')
+  async deleteUser(@Res() res: Response, @Req() req: Request) {
+    const { id } = req.params
+
+    const deletedUser = await this.userService.deletedUser(id)
+
+    return res.status(200).json({
+      message: 'User deleted',
+      user: deletedUser
+    })
+  }
 }
