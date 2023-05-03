@@ -30,7 +30,7 @@ export class UserServices {
       password: undefined,
     };
   }
-  
+
   async listUsers(): Promise<IUserList[]> {
     const users = await this.prisma.client.findMany({
       select: MP_SELECT_USER
@@ -50,5 +50,14 @@ export class UserServices {
     return user
   }
   
+  async deletedUser(id: string): Promise<IUserList> {
+    const user = await this.prisma.client.delete({
+      where: {
+        id
+      },
+      select: MP_SELECT_USER
+    })
 
+    return user
+  }
 }
