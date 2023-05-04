@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Put, Delete, Res, Body, Req } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Res, Body, Req, Patch } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { UserServices } from './user.service';
-import { UserBodyDTO } from './dto/user.dto';
+import { UserBodyDTO, UserUpdateBodyDTO } from './dto/user.dto';
 
 @Controller('/user')
 export class UserController {
@@ -30,15 +30,25 @@ export class UserController {
     return res.status(200).json(user)
   }
 
+  @Patch('/:id')
+  async updateUser(@Res() res: Response, @Body() body: UserUpdateBodyDTO, @Req() req: Request) {
+    const { id } = req.params
+
+    const userUpdated = await this.userService.updateUser(id, body)
+
+    return res.status(202).json(userUpdated)
+
+  }
+
   @Delete('/:id')
   async deleteUser(@Res() res: Response, @Req() req: Request) {
     const { id } = req.params
 
-    const deletedUser = await this.userService.deletedUser(id)
+    const disabledUser = await this.userService.deletedUser(id)
 
     return res.status(200).json({
-      message: 'User deleted',
-      user: deletedUser
+      message: 'User disabled',
+      user: disabledUser
     })
   }
 }

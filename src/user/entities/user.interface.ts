@@ -11,4 +11,5 @@ export interface IUser {
   password: string;
   email: string;
   cpf: string;
+  updatedAt?: Date
 }
