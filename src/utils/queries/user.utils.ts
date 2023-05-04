@@ -4,4 +4,5 @@ export const MP_SELECT_USER = {
     email: true,
     cpf: true,
     createdAt: true,
+    isActive: true
 }
