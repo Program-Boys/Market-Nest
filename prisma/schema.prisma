@@ -11,19 +11,20 @@ datasource db {
 }
 
 model Client {
-  id String @id
-  name String
-  email String @unique
-  password String 
-  cpf String @unique
+  id        String   @id
+  name      String
+  email     String   @unique
+  password  String
+  cpf       String   @unique
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-} 
+}
 
 model Product {
-  id String @id
-  name String
+  id          String @id
+  name        String
   description String
-  price Int
-  quantity Int
+  price       Int
+  stock       Int
 }
