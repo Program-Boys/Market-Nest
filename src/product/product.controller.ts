@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { ProductServices } from './product.service';
 import { Response, Request } from 'express';
 import { ProductBodyDTO } from './dto/product.dto';
@@ -28,5 +37,17 @@ export class ProductController {
     const productById = await this.productService.listProductById(id);
 
     return res.status(200).json(productById);
+  }
+
+  @Delete('/:id')
+  async deleteProduct(@Res() res: Response, @Req() req: Request) {
+    const { id } = req.params;
+
+    const deletedProduct = await this.productService.deleteProduct(id);
+
+    return res.status(200).json({
+      message: 'Product deleted',
+      product: deletedProduct,
+    });
   }
 }
