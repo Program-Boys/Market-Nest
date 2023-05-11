@@ -37,4 +37,14 @@ export class ProductServices {
 
     return product;
   }
+
+  async deleteProduct(id: string): Promise<IProduct> {
+    const deletedProduct = await this.prisma.product.delete({
+      where: {
+        id,
+      },
+    });
+
+    return deletedProduct;
+  }
 }
