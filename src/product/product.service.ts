@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IProduct } from './entities/product.interface';
-import { ProductBodyDTO } from './dto/product.dto';
+import { ProductBodyDTO, ProductUpdateBodyDTO } from './dto/product.dto';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { MP_SELECT_PRODUCT } from 'src/utils/queries/product.utils';
@@ -37,6 +37,19 @@ export class ProductServices {
 
     return product;
   }
+  
+  async updateProduct(id: string, data: ProductUpdateBodyDTO) {
+
+    const updatedProduct = await this.prisma.product.update({
+      where: {
+        id,
+      },
+      data,
+      select: MP_SELECT_PRODUCT
+    })
+
+    return updatedProduct
+  }
 
   async deleteProduct(id: string): Promise<IProduct> {
     const deletedProduct = await this.prisma.product.delete({
@@ -47,4 +60,5 @@ export class ProductServices {
 
     return deletedProduct;
   }
+
 }
