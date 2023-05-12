@@ -4,13 +4,14 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   Res,
 } from '@nestjs/common';
 import { ProductServices } from './product.service';
 import { Response, Request } from 'express';
-import { ProductBodyDTO } from './dto/product.dto';
+import { ProductBodyDTO, ProductUpdateBodyDTO } from './dto/product.dto';
 
 @Controller('/product')
 export class ProductController {
@@ -37,6 +38,15 @@ export class ProductController {
     const productById = await this.productService.listProductById(id);
 
     return res.status(200).json(productById);
+  }
+
+  @Patch('/:id')
+  async updateProduct(@Res() res: Response, @Req() req: Request,@Body() body: ProductUpdateBodyDTO)  {
+    const { id } = req.params
+
+    const updatedProduct = await this.productService.updateProduct(id, body)
+
+    return res.status(202).json(updatedProduct)
   }
 
   @Delete('/:id')
