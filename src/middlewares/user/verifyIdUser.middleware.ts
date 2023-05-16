@@ -4,20 +4,19 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class VerifyIdMiddleware implements NestMiddleware {
-
   constructor(private readonly prisma: PrismaService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params
+    const { id } = req.params;
 
-    const findUser = await this.prisma.client.findFirst({ 
-        where: {
-            id 
-        } 
-    })
+    const findUser = await this.prisma.client.findFirst({
+      where: {
+        id,
+      },
+    });
 
-    if (!findUser) return res.status(400).json({ messager: "User not found" })
+    if (!findUser) return res.status(404).json({ messager: 'User not found' });
 
-    next()
+    next();
   }
 }
