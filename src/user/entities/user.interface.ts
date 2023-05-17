@@ -7,9 +7,10 @@ export interface IUserList {
 }
 
 export interface IUser {
+  id?: string;
   name: string;
   password: string;
   email: string;
   cpf: string;
-  updatedAt?: Date
+  updatedAt?: Date;
 }
