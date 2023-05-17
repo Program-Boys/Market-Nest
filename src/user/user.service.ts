@@ -10,7 +10,7 @@ import { MP_SELECT_USER } from '../utils/queries/user.utils';
 @Injectable()
 export class UserServices {
   constructor(private readonly prisma: PrismaService) {}
-  
+
   async createUser(dto: UserBodyDTO): Promise<IUser> {
     const userData: Prisma.ClientCreateInput = {
       id: randomUUID(),
@@ -18,12 +18,12 @@ export class UserServices {
       password: await bcrypt.hash(dto.password, 10),
       createdAt: new Date(),
       updatedAt: new Date(),
-      isActive: true
+      isActive: true,
     };
 
     const createUser = await this.prisma.client.create({
       data: userData,
-      select: MP_SELECT_USER
+      select: MP_SELECT_USER,
     });
 
     return {
@@ -34,7 +34,7 @@ export class UserServices {
 
   async listUsers(): Promise<IUserList[]> {
     const users = await this.prisma.client.findMany({
-      select: MP_SELECT_USER
+      select: MP_SELECT_USER,
     });
 
     return users;
@@ -43,42 +43,47 @@ export class UserServices {
   async listUser(id: string): Promise<IUserList> {
     const user = await this.prisma.client.findFirst({
       where: {
-        id
+        id,
       },
-      select: MP_SELECT_USER
-    })
+      select: MP_SELECT_USER,
+    });
 
-    return user
+    return user;
   }
 
   async updateUser(id: string, data: UserBodyDTO): Promise<IUser> {
     const updatedUser = await this.prisma.client.update({
       where: {
-        id
+        id,
       },
       data,
-      select: MP_SELECT_USER
-    })
+      select: MP_SELECT_USER,
+    });
 
     return {
       ...updatedUser,
       password: undefined,
-      updatedAt: new Date()
-    }
-
+      updatedAt: new Date(),
+    };
   }
-  
+
   async deletedUser(id: string): Promise<IUserList> {
     const desactiveUser = await this.prisma.client.update({
       where: {
-        id
+        id,
       },
       data: {
-        isActive: false
+        isActive: false,
       },
-      select: MP_SELECT_USER
-    })
+      select: MP_SELECT_USER,
+    });
 
-    return desactiveUser
+    return desactiveUser;
+  }
+
+  async findByEmail(email: string): Promise<IUser> {
+    return await this.prisma.client.findFirst({
+      where: { email },
+    });
   }
 }
