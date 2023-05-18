@@ -12,5 +12,6 @@ export interface IUser {
   password: string;
   email: string;
   cpf: string;
+  isActive: boolean;
   updatedAt?: Date;
 }
