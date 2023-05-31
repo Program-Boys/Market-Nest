@@ -3,6 +3,7 @@ export interface UserPayload {
   email: string;
   name: string;
   isActive: boolean;
+  cart: {};
   iat?: number;
   exp?: number;
 }
