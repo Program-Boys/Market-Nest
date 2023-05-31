@@ -7,3 +7,7 @@ export const MP_SELECT_USER = {
   isActive: true,
   cart: true,
 };
+
+export const MP_INCLUDE_USER = {
+  cart: { include: { cartItems: true } },
+};
