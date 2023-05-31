@@ -23,6 +23,11 @@ export class UserController {
   async createUser(@Res() res: Response, @Body() body: UserBodyDTO) {
     const createUser = await this.userService.createUser(body);
 
+    await this.userService.associateCartToUser(
+      createUser.id,
+      createUser.cart.id,
+    );
+
     return res.status(201).json(createUser);
   }
 

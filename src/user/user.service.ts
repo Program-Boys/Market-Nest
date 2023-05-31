@@ -5,7 +5,7 @@ import { UserBodyDTO } from './dto/user.dto';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
-import { MP_SELECT_USER } from '../utils/queries/user.utils';
+import { MP_INCLUDE_USER, MP_SELECT_USER } from '../utils/queries/user.utils';
 
 @Injectable()
 export class UserServices {
@@ -19,6 +19,11 @@ export class UserServices {
       createdAt: new Date(),
       updatedAt: new Date(),
       isActive: true,
+      cart: {
+        create: {
+          id: randomUUID(),
+        },
+      },
     };
 
     const createUser = await this.prisma.client.create({
@@ -34,7 +39,7 @@ export class UserServices {
 
   async listUsers(): Promise<IUserList[]> {
     const users = await this.prisma.client.findMany({
-      select: MP_SELECT_USER,
+      include: MP_INCLUDE_USER,
     });
 
     return users;
@@ -45,10 +50,13 @@ export class UserServices {
       where: {
         id,
       },
-      select: MP_SELECT_USER,
+      include: MP_INCLUDE_USER,
     });
 
-    return user;
+    return {
+      ...user,
+      password: undefined,
+    };
   }
 
   async updateUser(id: string, data: UserBodyDTO): Promise<IUser> {
@@ -84,6 +92,31 @@ export class UserServices {
   async findByEmail(email: string): Promise<IUser> {
     return await this.prisma.client.findFirst({
       where: { email },
+    });
+  }
+
+  async associateCartToUser(idUser: string, idCart: string): Promise<void> {
+    await this.prisma.client.update({
+      where: {
+        id: idUser,
+      },
+      data: {
+        cart: {
+          connect: { id: idCart },
+        },
+      },
+    });
+
+    return;
+  }
+
+  async findUserWithCart(idUser: string) {
+    return await this.prisma.client.findFirst({
+      where: {
+        id: idUser,
+      },
+
+      include: { cart: { select: { id: true, cartItems: true } } },
     });
   }
 }
