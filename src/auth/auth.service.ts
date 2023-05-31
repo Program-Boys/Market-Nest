@@ -15,11 +15,16 @@ export class AuthService {
   ) {}
 
   async login(user: IUser): Promise<UserToken> {
+    const userCart = await this.userService.findUserWithCart(user.id);
+
+    console.log(userCart);
+
     const payload: UserPayload = {
       sub: user.id,
       email: user.email,
       name: user.name,
       isActive: user.isActive,
+      cart: userCart.cart,
     };
 
     return {

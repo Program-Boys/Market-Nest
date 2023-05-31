@@ -37,18 +37,20 @@ export class ProductServices {
 
     return product;
   }
-  
-  async updateProduct(id: string, data: ProductUpdateBodyDTO): Promise<IProduct> {
 
+  async updateProduct(
+    id: string,
+    data: ProductUpdateBodyDTO,
+  ): Promise<IProduct> {
     const updatedProduct = await this.prisma.product.update({
       where: {
         id,
       },
       data,
-      select: MP_SELECT_PRODUCT
-    })
+      select: MP_SELECT_PRODUCT,
+    });
 
-    return updatedProduct
+    return updatedProduct;
   }
 
   async deleteProduct(id: string): Promise<IProduct> {
@@ -60,5 +62,4 @@ export class ProductServices {
 
     return deletedProduct;
   }
-
 }

@@ -1,3 +1,5 @@
+import { ICart } from './cart.interface';
+
 export interface IUserList {
   id: string;
   name: string;
@@ -14,4 +16,5 @@ export interface IUser {
   cpf: string;
   isActive: boolean;
   updatedAt?: Date;
+  cart?: ICart;
 }
