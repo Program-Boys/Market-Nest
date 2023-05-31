@@ -12,6 +12,7 @@ import {
 import { ProductServices } from './product.service';
 import { Response, Request } from 'express';
 import { ProductBodyDTO, ProductUpdateBodyDTO } from './dto/product.dto';
+import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 
 @Controller('/product')
 export class ProductController {
@@ -41,12 +42,16 @@ export class ProductController {
   }
 
   @Patch('/:id')
-  async updateProduct(@Res() res: Response, @Req() req: Request,@Body() body: ProductUpdateBodyDTO)  {
-    const { id } = req.params
+  async updateProduct(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Body() body: ProductUpdateBodyDTO,
+  ) {
+    const { id } = req.params;
 
-    const updatedProduct = await this.productService.updateProduct(id, body)
+    const updatedProduct = await this.productService.updateProduct(id, body);
 
-    return res.status(202).json(updatedProduct)
+    return res.status(202).json(updatedProduct);
   }
 
   @Delete('/:id')
@@ -60,4 +65,15 @@ export class ProductController {
       product: deletedProduct,
     });
   }
+
+  //Em breve continuarei a partir daqui a inserção de produto no carrinho do cliente.
+
+  // @Post('/cart')
+  // async addingProductInCart(@Res() res: Response, @Req() req: Request) {
+  //   // const { cartId } = req.user;
+
+  //   console.log('TESTANDO AQUI ===>', req.user);
+
+  //   // const addingProduct = await this.productService.addingProductCart(cartId);
+  // }
 }
