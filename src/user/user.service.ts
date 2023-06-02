@@ -5,7 +5,7 @@ import { UserBodyDTO } from './dto/user.dto';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
-import { MP_INCLUDE_USER, MP_SELECT_USER } from '../utils/queries/user.utils';
+import { MP_SELECT_USER } from '../utils/queries/user.utils';
 
 @Injectable()
 export class UserServices {
@@ -39,7 +39,7 @@ export class UserServices {
 
   async listUsers(): Promise<IUserList[]> {
     const users = await this.prisma.client.findMany({
-      include: MP_INCLUDE_USER,
+      select: MP_SELECT_USER,
     });
 
     return users;
@@ -50,7 +50,7 @@ export class UserServices {
       where: {
         id,
       },
-      include: MP_INCLUDE_USER,
+      select: MP_SELECT_USER,
     });
 
     return {
