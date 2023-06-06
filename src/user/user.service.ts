@@ -49,7 +49,7 @@ export class UserServices {
 
   async listUsers(): Promise<IUserList[]> {
     const users = await this.prisma.client.findMany({
-      include: MP_INCLUDE_USER,
+      select: MP_SELECT_USER,
     });
 
     return users;
@@ -60,7 +60,7 @@ export class UserServices {
       where: {
         id,
       },
-      include: MP_INCLUDE_USER,
+      select: MP_SELECT_USER,
     });
 
     return {
