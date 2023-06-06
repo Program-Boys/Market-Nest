@@ -6,6 +6,15 @@ import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { MP_INCLUDE_USER, MP_SELECT_USER } from '../utils/queries/user.utils';
+import * as cpfLib from 'node-cpf';
+
+const validateCpf = (cpf: string): string => {
+  if (cpfLib.validate(cpf)) {
+    return cpfLib.mask(cpf);
+  } else {
+    throw new HttpException('CPF Invalid', 400);
+  }
+};
 
 @Injectable()
 export class UserServices {
@@ -15,6 +24,7 @@ export class UserServices {
     const userData: Prisma.ClientCreateInput = {
       id: randomUUID(),
       ...dto,
+      cpf: validateCpf(dto.cpf),
       password: await bcrypt.hash(dto.password, 10),
       createdAt: new Date(),
       updatedAt: new Date(),
