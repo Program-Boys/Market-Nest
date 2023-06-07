@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IProduct } from './entities/product.interface';
 import { ProductBodyDTO, ProductUpdateBodyDTO } from './dto/product.dto';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { MP_SELECT_PRODUCT } from 'src/utils/queries/product.utils';
+import { IUser } from 'src/user/entities/user.interface';
 
 @Injectable()
 export class ProductServices {
@@ -62,4 +63,31 @@ export class ProductServices {
 
     return deletedProduct;
   }
+
+  async addingProductInCart(id: string, user: Partial<IUser>): Promise<string> {
+    const findUser = await this.prisma.client.findFirst({
+      where: {
+        id: user.id,
+      },
+      include: { cart: true },
+    });
+
+    if (!findUser) throw new HttpException('ERROR', 400);
+
+    const cartItemData: Prisma.CartItemUncheckedCreateInput = {
+      id: randomUUID(),
+      cartId: user.cart.id,
+      productId: id,
+      quantity: 0,
+    };
+
+    await this.prisma.cartItem.create({
+      data: cartItemData,
+    });
+
+    return 'OK';
+  }
+
+  //Essa função acima não vai retornar apenas uma string
+  //Pensarei nisso mais tarde ou outro dia
 }
