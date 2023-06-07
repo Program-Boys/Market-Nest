@@ -49,7 +49,14 @@ export class UserServices {
 
   async listUsers(): Promise<IUserList[]> {
     const users = await this.prisma.client.findMany({
-      select: MP_SELECT_USER,
+      // select: MP_SELECT_USER,
+      include: {
+        cart: { include: { cartItems: { include: { product: true } } } },
+      },
+
+      //Isso acima tá BIZARRO, não vai ficar assim
+      //Boy, se souber uma maneira de deixar melhor, pode mexer
+      //Qualquer coisa mexo nisso depois
     });
 
     return users;

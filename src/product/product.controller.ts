@@ -12,7 +12,6 @@ import {
 import { ProductServices } from './product.service';
 import { Response, Request } from 'express';
 import { ProductBodyDTO, ProductUpdateBodyDTO } from './dto/product.dto';
-import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 
 @Controller('/product')
 export class ProductController {
@@ -68,12 +67,21 @@ export class ProductController {
 
   //Em breve continuarei a partir daqui a inserção de produto no carrinho do cliente.
 
-  // @Post('/cart')
-  // async addingProductInCart(@Res() res: Response, @Req() req: Request) {
-  //   // const { cartId } = req.user;
+  //Continuei, agora controller está funcional mas não na versão definitiva.
+  @Post('/cartItem/:id')
+  async addingProductInCart(@Res() res: Response, @Req() req: Request) {
+    const { id } = req.params;
+    const { user } = req;
 
-  //   console.log('TESTANDO AQUI ===>', req.user);
+    console.log('TESTANDO AQUI ===>', req.user);
 
-  //   // const addingProduct = await this.productService.addingProductCart(cartId);
-  // }
+    const addingProduct = await this.productService.addingProductInCart(
+      id,
+      user,
+    );
+
+    return res.status(200).json({
+      message: addingProduct,
+    });
+  }
 }
