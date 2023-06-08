@@ -90,4 +90,42 @@ export class ProductServices {
 
   //Essa função acima não vai retornar apenas uma string
   //Pensarei nisso mais tarde ou outro dia
+
+  async removingProductFromCart(
+    id: string,
+    user: Partial<IUser>,
+  ): Promise<void> {
+    const findUser = await this.prisma.client.findFirst({
+      where: {
+        id: user.id,
+      },
+      include: { cart: true },
+    });
+
+    if (!findUser) {
+      throw new HttpException('User not found', 404);
+    }
+
+    const cart = await this.prisma.cart.findFirst({
+      where: {
+        id: user.cart.id,
+      },
+      select: {
+        id: true,
+        cartItems: true,
+      },
+    });
+
+    const cartItem = cart.cartItems.find((e) => e.productId === id);
+
+    if (!cartItem) {
+      throw new HttpException('Product not found', 404);
+    }
+
+    await this.prisma.cartItem.delete({
+      where: {
+        id: cartItem.id,
+      },
+    });
+  }
 }
