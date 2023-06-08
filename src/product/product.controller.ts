@@ -84,4 +84,17 @@ export class ProductController {
       message: addingProduct,
     });
   }
+
+  @Delete('/cartItem/:id')
+  async removingProductFromCart(@Res() res: Response, @Req() req: Request) {
+    const { id } = req.params;
+
+    const { user } = req;
+
+    await this.productService.removingProductFromCart(id, user);
+
+    return res.status(200).json({
+      message: 'Product removed from cart',
+    });
+  }
 }
