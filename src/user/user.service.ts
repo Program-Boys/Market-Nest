@@ -1,11 +1,14 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IUser, IUserList } from './entities/user.interface';
 import { UserBodyDTO } from './dto/user.dto';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
-import { MP_SELECT_USER } from '../utils/queries/user.utils';
+import {
+  MP_SELECT_GET_USER,
+  MP_SELECT_USER,
+} from '../utils/queries/user.utils';
 import validateCpf from './functions/validateCpf';
 
 @Injectable()
@@ -41,14 +44,7 @@ export class UserServices {
 
   async listUsers(): Promise<IUserList[]> {
     const users = await this.prisma.client.findMany({
-      // select: MP_SELECT_USER,
-      include: {
-        cart: { include: { cartItems: { include: { product: true } } } },
-      },
-
-      //Isso acima tá BIZARRO, não vai ficar assim
-      //Boy, se souber uma maneira de deixar melhor, pode mexer
-      //Qualquer coisa mexo nisso depois
+      select: MP_SELECT_GET_USER,
     });
 
     return users;
@@ -59,7 +55,7 @@ export class UserServices {
       where: {
         id,
       },
-      select: MP_SELECT_USER,
+      select: MP_SELECT_GET_USER,
     });
 
     return {
@@ -74,7 +70,7 @@ export class UserServices {
         id,
       },
       data,
-      select: MP_SELECT_USER,
+      select: MP_SELECT_GET_USER,
     });
 
     return {
@@ -92,7 +88,7 @@ export class UserServices {
       data: {
         isActive: false,
       },
-      select: MP_SELECT_USER,
+      select: MP_SELECT_GET_USER,
     });
 
     return desactiveUser;
@@ -119,7 +115,7 @@ export class UserServices {
     return;
   }
 
-  async findUserWithCart(idUser: string) {
+  async findUserWithCart(idUser: string): Promise<IUser> {
     return await this.prisma.client.findFirst({
       where: {
         id: idUser,
