@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   Res,
 } from '@nestjs/common';
@@ -69,15 +70,18 @@ export class ProductController {
 
   //Continuei, agora controller está funcional mas não na versão definitiva.
   @Post('/cartItem/:id')
-  async addingProductInCart(@Res() res: Response, @Req() req: Request) {
+  async addingProductInCart(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Query('quantity') quantity: number,
+  ) {
     const { id } = req.params;
     const { user } = req;
-
-    console.log('TESTANDO AQUI ===>', req.user);
 
     const addingProduct = await this.productService.addingProductInCart(
       id,
       user,
+      quantity,
     );
 
     return res.status(200).json({

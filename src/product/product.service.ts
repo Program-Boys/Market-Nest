@@ -64,27 +64,70 @@ export class ProductServices {
     return deletedProduct;
   }
 
-  async addingProductInCart(id: string, user: Partial<IUser>): Promise<string> {
+  async addingProductInCart(
+    id: string,
+    user: Partial<IUser>,
+    quantity: number,
+  ): Promise<string> {
     const findUser = await this.prisma.client.findFirst({
       where: {
         id: user.id,
       },
-      include: { cart: true },
+      include: { cart: { include: { cartItems: true } } },
     });
 
-    if (!findUser) throw new HttpException('ERROR', 400);
+    if (!findUser) throw new HttpException('User not found', 404);
 
-    const cartItemData: Prisma.CartItemUncheckedCreateInput = {
-      id: randomUUID(),
-      cartId: user.cart.id,
-      productId: id,
-      quantity: 0,
-    };
-
-    await this.prisma.cartItem.create({
-      data: cartItemData,
+    const currentProduct = await this.prisma.product.findFirst({
+      where: { id },
     });
 
+    if (!currentProduct) throw new HttpException('Product not found', 404);
+
+    const findProductInCart = findUser.cart.cartItems.find(
+      (item) => item.productId === id,
+    );
+
+    if (findProductInCart) {
+      const newQuatity = findProductInCart.quantity - quantity;
+
+      if (newQuatity > currentProduct.stock) {
+        throw new HttpException('Insufficient stock', 400);
+      }
+
+      await this.prisma.cartItem.update({
+        where: {
+          id: findProductInCart.id,
+        },
+        data: {
+          quantity: newQuatity,
+        },
+      });
+    } else {
+      if (quantity > currentProduct.stock) {
+        throw new HttpException('Insufficient stock', 400);
+      }
+
+      const cartItemData: Prisma.CartItemUncheckedCreateInput = {
+        id: randomUUID(),
+        cartId: user.cart.id,
+        productId: id,
+        quantity: quantity,
+      };
+
+      await this.prisma.cartItem.create({
+        data: cartItemData,
+      });
+
+      await this.prisma.product.update({
+        where: {
+          id: currentProduct.id,
+        },
+        data: {
+          stock: currentProduct.stock - quantity,
+        },
+      });
+    }
     return 'OK';
   }
 
