@@ -1,6 +1,7 @@
 import { HttpException, Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { MP_PRODUCT_MID_NOT_FOUND } from 'src/utils/return-messages/product-returns.utils';
 
 @Injectable()
 export class VerifyIdProductMiddleware implements NestMiddleware {
@@ -16,7 +17,7 @@ export class VerifyIdProductMiddleware implements NestMiddleware {
     });
 
     if (!findProduct)
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: MP_PRODUCT_MID_NOT_FOUND });
 
     next();
   }

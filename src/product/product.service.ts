@@ -89,7 +89,7 @@ export class ProductServices {
     );
 
     if (findProductInCart) {
-      const newQuatity = findProductInCart.quantity - quantity;
+      const newQuatity = findProductInCart.quantity + quantity;
 
       if (newQuatity > currentProduct.stock) {
         throw new HttpException('Insufficient stock', 400);
@@ -101,6 +101,15 @@ export class ProductServices {
         },
         data: {
           quantity: newQuatity,
+        },
+      });
+
+      await this.prisma.product.update({
+        where: {
+          id: currentProduct.id,
+        },
+        data: {
+          stock: currentProduct.stock - quantity,
         },
       });
     } else {
@@ -118,16 +127,8 @@ export class ProductServices {
       await this.prisma.cartItem.create({
         data: cartItemData,
       });
-
-      await this.prisma.product.update({
-        where: {
-          id: currentProduct.id,
-        },
-        data: {
-          stock: currentProduct.stock - quantity,
-        },
-      });
     }
+
     return 'OK';
   }
 

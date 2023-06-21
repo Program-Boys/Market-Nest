@@ -21,6 +21,7 @@ export const MP_SELECT_GET_USER = {
       clientId: false,
       cartItems: {
         select: {
+          quantity: true,
           product: true,
         },
       },

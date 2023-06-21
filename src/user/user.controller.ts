@@ -13,6 +13,7 @@ import { Response, Request } from 'express';
 import { UserServices } from './user.service';
 import { UserBodyDTO, UserUpdateBodyDTO } from './dto/user.dto';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
+import { MP_USER_DISABLED } from 'src/utils/return-messages/user-returns.utils';
 
 @Controller('/user')
 export class UserController {
@@ -69,7 +70,7 @@ export class UserController {
     const disabledUser = await this.userService.deletedUser(id);
 
     return res.status(200).json({
-      message: 'User disabled',
+      message: MP_USER_DISABLED,
       user: disabledUser,
     });
   }
