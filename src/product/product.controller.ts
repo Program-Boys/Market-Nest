@@ -13,6 +13,10 @@ import {
 import { ProductServices } from './product.service';
 import { Response, Request } from 'express';
 import { ProductBodyDTO, ProductUpdateBodyDTO } from './dto/product.dto';
+import {
+  MP_PRODUCT_DELETED,
+  MP_PRODUCT_REMOVED_FROM_CART,
+} from 'src/utils/return-messages/product-returns.utils';
 
 @Controller('/product')
 export class ProductController {
@@ -61,7 +65,7 @@ export class ProductController {
     const deletedProduct = await this.productService.deleteProduct(id);
 
     return res.status(200).json({
-      message: 'Product deleted',
+      message: MP_PRODUCT_DELETED,
       product: deletedProduct,
     });
   }
@@ -98,7 +102,7 @@ export class ProductController {
     await this.productService.removingProductFromCart(id, user);
 
     return res.status(200).json({
-      message: 'Product removed from cart',
+      message: MP_PRODUCT_REMOVED_FROM_CART,
     });
   }
 }
