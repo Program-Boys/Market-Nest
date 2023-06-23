@@ -20,6 +20,11 @@ class User {
   static list(): User[] {
     return allUsers;
   }
+
+  static listById(id: string): User {
+    const oneUser = allUsers.find((user) => user.id === id);
+    return oneUser;
+  }
 }
 
 export { User };
