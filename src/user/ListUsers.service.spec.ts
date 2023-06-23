@@ -39,4 +39,19 @@ describe('Testing Users Services List Users', () => {
 
     expect(allUsers.length).toBeGreaterThan(0);
   });
+
+  it('Should be able to list an user by id', async () => {
+    const createUserData: User = {
+      name: 'John Doe',
+      email: 'test2@mail.com',
+      password: '12345678Gu',
+      cpf: cpf.generate(),
+    };
+
+    const userWithId = await createUserService.execute(createUserData);
+
+    const getOne = await listUserService.executeById(userWithId.id);
+
+    expect(getOne).toHaveProperty('id');
+  });
 });
