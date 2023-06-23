@@ -10,4 +10,11 @@ export class ListUserService {
 
     return allUsers;
   }
+
+  async executeById(id: string) {
+    const listOneUser = User.listById(id);
+    const oneUser = await this.usersRepository.listById(listOneUser.id);
+
+    return oneUser;
+  }
 }
