@@ -5,7 +5,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 
-@ValidatorConstraint({ name: 'urlSiz', async: true })
+@ValidatorConstraint({ name: 'urlSize', async: true })
 export class UrlSizeValidator implements ValidatorConstraintInterface {
   async validate(url: string, args: ValidationArguments): Promise<boolean> {
     try {
