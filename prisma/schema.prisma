@@ -28,6 +28,7 @@ model Product {
   description String
   price       Int
   stock       Int
+  imageUrl    String
   cartItems CartItem[]
 }
 
