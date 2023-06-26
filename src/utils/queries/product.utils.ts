@@ -4,4 +4,5 @@ export const MP_SELECT_PRODUCT = {
   description: true,
   price: true,
   stock: true,
+  imageUrl: true,
 };
