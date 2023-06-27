@@ -5,6 +5,7 @@ class User {
   name: string;
   email: string;
   password: string;
+  isActive?: boolean;
   cpf: string;
 
   private constructor({ name, email, password, cpf }: User) {
@@ -13,6 +14,7 @@ class User {
 
   static create({ name, email, password, cpf }: User) {
     const newUser = new User({ name, email, password, cpf });
+    newUser.isActive = true;
     allUsers.push(newUser);
     return newUser;
   }

@@ -34,6 +34,7 @@ describe('Testing Users Services about creation', () => {
     const user = await createUserService.execute(createUserData);
 
     expect(user).toHaveProperty('id');
+    expect(user).toHaveProperty('isActive');
   });
 
   it('Should not be able to create a user', async () => {
