@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Put,
   Delete,
   Res,
   Body,
@@ -47,6 +46,18 @@ export class UserController {
     const user = await this.userService.listUser(id);
 
     return res.status(200).json(user);
+  }
+
+  @IsPublic()
+  @Get('/not-active')
+  async getUsersNotActive(@Res() res: Response) {
+    console.log('oi');
+
+    const users = await this.userService.listUsersNotActive();
+
+    console.log('oi');
+
+    return res.status(200).json(users);
   }
 
   @Patch('/:id')
