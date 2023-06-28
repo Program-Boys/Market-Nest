@@ -6,6 +6,7 @@ export interface IUserList {
   password?: string;
   email: string;
   cpf: string;
+  isActive: boolean;
 }
 
 export interface IUser {
