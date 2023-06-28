@@ -19,7 +19,6 @@ export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(VerifyIdMiddleware)
-      .exclude('user/not-active/')
       .forRoutes(
         { path: 'user/:id', method: RequestMethod.GET },
         { path: 'user/:id', method: RequestMethod.PATCH },

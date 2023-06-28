@@ -49,7 +49,7 @@ export class UserController {
   }
 
   @IsPublic()
-  @Get('/not-active')
+  @Get('/not')
   async getUsersNotActive(@Res() res: Response) {
     console.log('oi');
 
