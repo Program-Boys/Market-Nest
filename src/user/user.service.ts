@@ -64,6 +64,17 @@ export class UserServices {
     };
   }
 
+  async listUsersNotActive(): Promise<IUserList[]> {
+    const users = await this.prisma.client.findMany({
+      where: {
+        isActive: false,
+      },
+      select: MP_SELECT_GET_USER,
+    });
+
+    return users;
+  }
+
   async updateUser(id: string, data: UserBodyDTO): Promise<IUser> {
     const updatedUser = await this.prisma.client.update({
       where: {
