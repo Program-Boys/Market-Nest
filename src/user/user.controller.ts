@@ -46,6 +46,13 @@ export class UserController {
     return res.status(200).json(users);
   }
 
+  @Get('/active')
+  async getUsersActive(@Res() res: Response) {
+    const users = await this.userService.listUsersActive();
+
+    return res.status(200).json(users);
+  }
+
   @Get('/:id')
   async getUserById(@Res() res: Response, @Req() req: Request) {
     const { id } = req.params;
