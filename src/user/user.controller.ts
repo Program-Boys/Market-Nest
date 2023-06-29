@@ -11,7 +11,7 @@ import {
 import { Response, Request } from 'express';
 import { UserServices } from './user.service';
 import { UserBodyDTO, UserUpdateBodyDTO } from './dto/user.dto';
-import { IsPublic } from 'src/auth/decorators/is-public.decorator';
+import { IsPublic } from '../../src/auth/decorators/is-public.decorator';
 import { MP_USER_DISABLED } from 'src/utils/return-messages/user-returns.utils';
 
 @Controller('/user')
@@ -39,6 +39,13 @@ export class UserController {
     return res.status(200).json(users);
   }
 
+  @Get('/not-active')
+  async getUsersNotActive(@Res() res: Response) {
+    const users = await this.userService.listUsersNotActive();
+
+    return res.status(200).json(users);
+  }
+
   @Get('/:id')
   async getUserById(@Res() res: Response, @Req() req: Request) {
     const { id } = req.params;
@@ -46,18 +53,6 @@ export class UserController {
     const user = await this.userService.listUser(id);
 
     return res.status(200).json(user);
-  }
-
-  @IsPublic()
-  @Get('/not')
-  async getUsersNotActive(@Res() res: Response) {
-    console.log('oi');
-
-    const users = await this.userService.listUsersNotActive();
-
-    console.log('oi');
-
-    return res.status(200).json(users);
   }
 
   @Patch('/:id')
