@@ -175,4 +175,72 @@ export class ProductServices {
       },
     });
   }
+
+  async removingQuantityProductFromCart(
+    id: string,
+    user: Partial<IUser>,
+    quantity: number,
+  ) {
+    const findUser = await this.prisma.client.findFirst({
+      where: {
+        id: user.id,
+      },
+      include: { cart: { include: { cartItems: true } } },
+    });
+
+    if (!findUser) throw new HttpException(MP_USER_NOT_FOUND, 404);
+
+    const currentProduct = await this.prisma.product.findFirst({
+      where: { id },
+    });
+
+    if (!currentProduct) throw new HttpException(MP_PRODUCT_NOT_FOUND, 404);
+
+    const findProductInCart = findUser.cart.cartItems.find(
+      (item) => item.productId === id,
+    );
+
+    if (findProductInCart) {
+      const newQuatity = findProductInCart.quantity - quantity;
+
+      if (newQuatity > currentProduct.stock) {
+        throw new HttpException(MP_INSUFFICIENT_STOCK, 400);
+      }
+
+      await this.prisma.cartItem.update({
+        where: {
+          id: findProductInCart.id,
+        },
+        data: {
+          quantity: newQuatity,
+        },
+      });
+
+      await this.prisma.product.update({
+        where: {
+          id: currentProduct.id,
+        },
+        data: {
+          stock: currentProduct.stock + quantity,
+        },
+      });
+    } else {
+      if (quantity > currentProduct.stock) {
+        throw new HttpException(MP_INSUFFICIENT_STOCK, 400);
+      }
+
+      const cartItemData: Prisma.CartItemUncheckedCreateInput = {
+        id: randomUUID(),
+        cartId: user.cart.id,
+        productId: id,
+        quantity: quantity,
+      };
+
+      await this.prisma.cartItem.create({
+        data: cartItemData,
+      });
+    }
+
+    return 'Quantity removed';
+  }
 }
