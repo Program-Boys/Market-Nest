@@ -10,7 +10,7 @@ export class VerifyIdMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
 
-    if (id === 'not-active') {
+    if (id === 'not-active' || id === 'active') {
       next();
       return;
     }
