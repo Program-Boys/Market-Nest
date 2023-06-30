@@ -17,7 +17,9 @@ import {
   MP_PRODUCT_DELETED,
   MP_PRODUCT_REMOVED_FROM_CART,
 } from 'src/utils/return-messages/product-returns.utils';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('products')
 @Controller('/product')
 export class ProductController {
   constructor(private readonly productService: ProductServices) {}

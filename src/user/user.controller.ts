@@ -13,7 +13,9 @@ import { UserServices } from './user.service';
 import { UserBodyDTO, UserUpdateBodyDTO } from './dto/user.dto';
 import { IsPublic } from '../../src/auth/decorators/is-public.decorator';
 import { MP_USER_DISABLED } from 'src/utils/return-messages/user-returns.utils';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('clients')
 @Controller('/user')
 export class UserController {
   constructor(private readonly userService: UserServices) {}
