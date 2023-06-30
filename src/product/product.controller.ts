@@ -107,4 +107,25 @@ export class ProductController {
       message: MP_PRODUCT_REMOVED_FROM_CART,
     });
   }
+
+  @Post('/cartItem/remove-quantity/:id')
+  async removingQuantityProductFromCart(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Query('quantity') quantity: number,
+  ) {
+    const { id } = req.params;
+    const { user } = req;
+
+    const removeQuantity =
+      await this.productService.removingQuantityProductFromCart(
+        id,
+        user,
+        quantity,
+      );
+
+    return res.status(200).json({
+      message: removeQuantity,
+    });
+  }
 }
