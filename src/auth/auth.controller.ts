@@ -25,7 +25,6 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: LoginRequestBody })
   async login(@Request() req: AuthRequest) {
-    const test: UserBodyDTO = req.user;
-    return this.authService.login(test);
+    return this.authService.login(req.user);
   }
 }
