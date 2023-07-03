@@ -43,6 +43,13 @@ export class UserBodyDTO {
   })
   @IsNotEmpty({ message: "The CPF field can't be empty" })
   cpf: string;
+
+  @ApiProperty({
+    example: true,
+    description:
+      'Para sabermos se o usuário consta como ativo ou não no nosso sistema',
+  })
+  isActive: boolean;
 }
 
 export class UserUpdateBodyDTO {
@@ -85,4 +92,11 @@ export class UserUpdateBodyDTO {
   @IsOptional()
   @IsNotEmpty({ message: "The CPF field can't be empty" })
   cpf: string;
+
+  @ApiProperty({
+    example: true,
+    description:
+      'Para sabermos se o usuário consta como ativo ou não no nosso sistema',
+  })
+  isActive: boolean;
 }
