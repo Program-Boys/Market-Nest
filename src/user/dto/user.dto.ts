@@ -100,3 +100,13 @@ export class UserUpdateBodyDTO {
   })
   isActive: boolean;
 }
+
+export class UserForgetBodyDTO {
+  @ApiProperty({
+    example: 'johndoe@mail.com',
+    description:
+      'É necessário informar o email para que haja uma solicitação para uma nova senha',
+  })
+  @IsEmail(undefined, { message: 'Email is not valid' })
+  email: string;
+}

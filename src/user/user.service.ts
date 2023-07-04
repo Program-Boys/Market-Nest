@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IUser, IUserList } from './entities/user.interface';
-import { UserBodyDTO } from './dto/user.dto';
+import { UserBodyDTO, UserForgetBodyDTO } from './dto/user.dto';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
@@ -10,6 +10,8 @@ import {
   MP_SELECT_USER,
 } from '../utils/queries/user.utils';
 import validateCpf from './functions/validateCpf';
+import { MP_USER_NOT_FOUND } from 'src/utils/return-messages/user-returns.utils';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class UserServices {
@@ -146,4 +148,25 @@ export class UserServices {
       include: { cart: { select: { id: true, cartItems: true } } },
     });
   }
+
+  // async forgetPassword(email: UserForgetBodyDTO): Promise<string> {
+  //   const findUser = await this.prisma.client.findFirst({
+  //     where: email,
+  //   });
+
+  //   if (!findUser) throw new HttpException(MP_USER_NOT_FOUND, 400);
+
+  //   const transport = nodemailer.createTransport({
+  //     host: 'smtp.gmail.com',
+  //     port: 465,
+  //     secure: true,
+  //   });
+
+  //   const mailOptions = {
+  //     from: 'guisix16@gmail.com',
+  //     to: 'guilhermeshadow91@gmail.com',
+  //     subject: 'Teste maneiro',
+  //     html: '<h1>É isso aí</h1>',
+  //   };
+  // }
 }
