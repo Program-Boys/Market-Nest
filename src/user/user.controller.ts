@@ -59,10 +59,10 @@ export class UserController {
     return res.status(200).json(users);
   }
 
-  @Post('forget-password')
-  async forgetPassword(@Body() body: UserForgetBodyDTO, @Res() res: Response) {
-    const forgetPassword = await this.userService.forgetPassword(body);
-  }
+  // @Post('forget-password')
+  // async forgetPassword(@Body() body: UserForgetBodyDTO, @Res() res: Response) {
+  //   const forgetPassword = await this.userService.forgetPassword(body);
+  // }
 
   @Get('/:id')
   async getUserById(@Res() res: Response, @Req() req: Request) {
