@@ -10,7 +10,11 @@ import {
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { UserServices } from './user.service';
-import { UserBodyDTO, UserUpdateBodyDTO } from './dto/user.dto';
+import {
+  UserBodyDTO,
+  UserForgetBodyDTO,
+  UserUpdateBodyDTO,
+} from './dto/user.dto';
 import { IsPublic } from '../../src/auth/decorators/is-public.decorator';
 import { MP_USER_DISABLED } from 'src/utils/return-messages/user-returns.utils';
 import { ApiTags } from '@nestjs/swagger';
@@ -54,6 +58,11 @@ export class UserController {
 
     return res.status(200).json(users);
   }
+
+  // @Post('forget-password')
+  // async forgetPassword(@Body() body: UserForgetBodyDTO, @Res() res: Response) {
+  //   const forgetPassword = await this.userService.forgetPassword(body);
+  // }
 
   @Get('/:id')
   async getUserById(@Res() res: Response, @Req() req: Request) {
