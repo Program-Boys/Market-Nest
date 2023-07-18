@@ -11,11 +11,15 @@ import {
 } from '../utils/queries/user.utils';
 import validateCpf from './functions/validateCpf';
 import { MP_USER_NOT_FOUND } from 'src/utils/return-messages/user-returns.utils';
-import * as nodemailer from 'nodemailer';
+import { JwtService } from '@nestjs/jwt';
+import { UserPayload } from 'src/auth/models/UserPayload';
 
 @Injectable()
 export class UserServices {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async createUser(dto: UserBodyDTO): Promise<IUser> {
     const userData: Prisma.ClientCreateInput = {
@@ -149,24 +153,22 @@ export class UserServices {
     });
   }
 
-  // async forgetPassword(email: UserForgetBodyDTO): Promise<string> {
-  //   const findUser = await this.prisma.client.findFirst({
-  //     where: email,
-  //   });
+  async forgetPassword(email: UserForgetBodyDTO): Promise<string> {
+    const findUser = await this.prisma.client.findFirst({
+      where: email,
+    });
 
-  //   if (!findUser) throw new HttpException(MP_USER_NOT_FOUND, 400);
+    if (!findUser) throw new HttpException(MP_USER_NOT_FOUND, 400);
 
-  //   const transport = nodemailer.createTransport({
-  //     host: 'smtp.gmail.com',
-  //     port: 465,
-  //     secure: true,
-  //   });
+    const payload = {
+      email: findUser.email,
+      id: findUser.id,
+    };
 
-  //   const mailOptions = {
-  //     from: 'guisix16@gmail.com',
-  //     to: 'guilhermeshadow91@gmail.com',
-  //     subject: 'Teste maneiro',
-  //     html: '<h1>É isso aí</h1>',
-  //   };
-  // }
+    const tokenNewPassword = this.jwtService.sign(payload);
+
+    console.log(' QUERO VER SE GERA =>', tokenNewPassword);
+
+    return '';
+  }
 }
