@@ -8,9 +8,16 @@ import { UserController } from './user.controller';
 import { UserServices } from './user.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { VerifyIdMiddleware } from 'src/middlewares/user/verifyIdUser.middleware';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    PrismaModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1d' },
+    }),
+  ],
   controllers: [UserController],
   providers: [UserServices],
   exports: [UserServices],
