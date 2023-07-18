@@ -60,8 +60,12 @@ export class UserController {
   }
 
   @Post('forget-password')
-  async forgetPassword(@Body() body: UserForgetBodyDTO, @Res() res: Response) {
-    const forgetPassword = await this.userService.forgetPassword(body);
+  async forgetPassword(
+    @Body() body: UserForgetBodyDTO,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const forgetPassword = await this.userService.forgetPassword(body, req);
 
     return res.status(200).json(forgetPassword);
   }

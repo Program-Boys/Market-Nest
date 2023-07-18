@@ -12,7 +12,8 @@ import {
 import validateCpf from './functions/validateCpf';
 import { MP_USER_NOT_FOUND } from 'src/utils/return-messages/user-returns.utils';
 import { JwtService } from '@nestjs/jwt';
-import { UserPayload } from 'src/auth/models/UserPayload';
+import { getFullURL } from './functions/getFullURL';
+import { Request } from 'express';
 
 @Injectable()
 export class UserServices {
@@ -153,12 +154,19 @@ export class UserServices {
     });
   }
 
-  async forgetPassword(email: UserForgetBodyDTO): Promise<string> {
+  async forgetPassword(
+    email: UserForgetBodyDTO,
+    req: Request,
+  ): Promise<string> {
     const findUser = await this.prisma.client.findFirst({
       where: email,
     });
 
     if (!findUser) throw new HttpException(MP_USER_NOT_FOUND, 400);
+
+    const baseURL = await getFullURL(req);
+
+    console.log('QUERO VER URL =>', baseURL);
 
     const payload = {
       email: findUser.email,
@@ -166,6 +174,9 @@ export class UserServices {
     };
 
     const tokenNewPassword = this.jwtService.sign(payload);
+    const test = new URL(tokenNewPassword, baseURL);
+
+    console.log('QUERO VER O TEST =>', test);
 
     console.log(' QUERO VER SE GERA =>', tokenNewPassword);
 
