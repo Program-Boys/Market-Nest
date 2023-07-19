@@ -11,7 +11,7 @@ import {
 } from '../utils/queries/user.utils';
 import validateCpf from './functions/validateCpf';
 import { MP_USER_NOT_FOUND } from 'src/utils/return-messages/user-returns.utils';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, JwtVerifyOptions } from '@nestjs/jwt';
 import { getFullURL } from './functions/getFullURL';
 import { Request } from 'express';
 
@@ -162,11 +162,12 @@ export class UserServices {
       where: email,
     });
 
-    if (!findUser) throw new HttpException(MP_USER_NOT_FOUND, 400);
+    if (!findUser) throw new HttpException(MP_USER_NOT_FOUND, 404);
 
-    const baseURL = await getFullURL(req);
-
-    console.log('QUERO VER URL =>', baseURL);
+    const baseURL = (await getFullURL(req)).replace(
+      'forget-password',
+      'new-password/',
+    );
 
     const payload = {
       email: findUser.email,
@@ -174,12 +175,35 @@ export class UserServices {
     };
 
     const tokenNewPassword = this.jwtService.sign(payload);
-    const test = new URL(tokenNewPassword, baseURL);
+    const urlChangePassword = new URL(tokenNewPassword, baseURL).href;
 
-    console.log('QUERO VER O TEST =>', test);
+    return urlChangePassword;
+  }
 
-    console.log(' QUERO VER SE GERA =>', tokenNewPassword);
+  async newPassword(password: string, token: string): Promise<string> {
+    const decoded = this.jwtService.verify(
+      token,
+      process.env.JWT_SECRET as JwtVerifyOptions,
+    );
 
-    return '';
+    const findUser = await this.prisma.client.findFirst({
+      where: {
+        id: decoded.id,
+      },
+    });
+
+    if (!findUser) throw new HttpException(MP_USER_NOT_FOUND, 404);
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await this.prisma.client.update({
+      where: { id: findUser.id },
+      data: {
+        password: hashedPassword,
+        updatedAt: new Date(),
+      },
+    });
+
+    return 'Password updated with success';
   }
 }

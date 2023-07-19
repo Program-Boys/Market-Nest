@@ -59,6 +59,7 @@ export class UserController {
     return res.status(200).json(users);
   }
 
+  @IsPublic()
   @Post('forget-password')
   async forgetPassword(
     @Body() body: UserForgetBodyDTO,
@@ -68,6 +69,17 @@ export class UserController {
     const forgetPassword = await this.userService.forgetPassword(body, req);
 
     return res.status(200).json(forgetPassword);
+  }
+
+  @IsPublic()
+  @Post('new-password/:token')
+  async newPassword(@Res() res: Response, @Req() req: Request) {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const newPassword = await this.userService.newPassword(password, token);
+
+    return res.status(200).json(newPassword);
   }
 
   @Get('/:id')
