@@ -4,6 +4,7 @@ export const MP_SELECT_USER = {
   email: true,
   cpf: true,
   createdAt: true,
+  updatedAt: true,
   isActive: true,
   cart: true,
 };
@@ -14,6 +15,7 @@ export const MP_SELECT_GET_USER = {
   email: true,
   cpf: true,
   createdAt: true,
+  updatedAt: true,
   isActive: true,
   cart: {
     select: {
