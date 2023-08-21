@@ -12,14 +12,17 @@ import {
 import validateCpf from './functions/validateCpf';
 import { MP_USER_NOT_FOUND } from 'src/utils/return-messages/user-returns.utils';
 import { JwtService, JwtVerifyOptions } from '@nestjs/jwt';
-import { getFullURL } from './functions/getFullURL';
 import { Request } from 'express';
+import { MailerService } from '@nestjs-modules/mailer';
+import { getFullURL } from './functions/getFullURL';
+const Mailgen = require('mailgen');
 
 @Injectable()
 export class UserServices {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly mailer: MailerService,
   ) {}
 
   async createUser(dto: UserBodyDTO): Promise<IUser> {
@@ -154,20 +157,58 @@ export class UserServices {
     });
   }
 
-  async forgetPassword(
-    email: UserForgetBodyDTO,
-    req: Request,
-  ): Promise<string> {
+  createEmailTemplate(user: IUser, req: Request) {
+    const mailGen = new Mailgen({
+      theme: 'default',
+      product: {
+        name: 'Reset password',
+        link: 'http://localhost:3000/',
+      },
+    });
+
+    const url = getFullURL(req).replace('forget-password', 'new-password');
+
+    console.log(url);
+
+    const email = {
+      body: {
+        name: user.name,
+        intro: 'Reset your password',
+        action: {
+          instructions:
+            'Para que seja possível o reset de senha, por favor, clique no botão abaixo e escreva sua nova senha',
+          button: {
+            color: '#0099FF',
+            text: 'Reset your password',
+            link: `${url}?token=${user.resetToken}`,
+          },
+        },
+        outro: 'Need Help? Please, send me a email',
+      },
+    };
+
+    const mailBody = mailGen.generate(email);
+
+    return mailBody;
+  }
+
+  async sendMail(user: IUser, req: Request) {
+    const htmlBody = this.createEmailTemplate(user, req);
+
+    await this.mailer.sendMail({
+      to: user.email,
+      from: 'guisix16@gmail.com',
+      subject: 'Reset your password',
+      html: htmlBody,
+    });
+  }
+
+  async forgetPassword(email: UserForgetBodyDTO, req: Request): Promise<void> {
     const findUser = await this.prisma.client.findFirst({
       where: email,
     });
 
     if (!findUser) throw new HttpException(MP_USER_NOT_FOUND, 404);
-
-    const baseURL = (await getFullURL(req)).replace(
-      'forget-password',
-      'new-password/',
-    );
 
     const payload = {
       email: findUser.email,
@@ -175,9 +216,19 @@ export class UserServices {
     };
 
     const tokenNewPassword = this.jwtService.sign(payload);
-    const urlChangePassword = new URL(tokenNewPassword, baseURL).href;
 
-    return urlChangePassword;
+    await this.prisma.client.update({
+      where: {
+        id: findUser.id,
+      },
+      data: {
+        resetToken: tokenNewPassword,
+      },
+    });
+
+    await this.sendMail(findUser, req);
+
+    return;
   }
 
   async newPassword(password: string, token: string): Promise<string> {
@@ -185,6 +236,8 @@ export class UserServices {
       token,
       process.env.JWT_SECRET as JwtVerifyOptions,
     );
+
+    console.log(decoded);
 
     const findUser = await this.prisma.client.findFirst({
       where: {
@@ -201,6 +254,7 @@ export class UserServices {
       data: {
         password: hashedPassword,
         updatedAt: new Date(),
+        resetToken: null,
       },
     });
 
