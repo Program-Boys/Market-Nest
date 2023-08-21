@@ -18,4 +18,5 @@ export interface IUser {
   isActive: boolean;
   updatedAt?: Date;
   cart?: ICart;
+  resetToken?: string;
 }

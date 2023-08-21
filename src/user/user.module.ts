@@ -15,7 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
     PrismaModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1d' },
+      signOptions: { expiresIn: '1h' },
     }),
   ],
   controllers: [UserController],
@@ -29,6 +29,7 @@ export class UserModule implements NestModule {
       .exclude(
         { path: 'user/not-active', method: RequestMethod.GET },
         { path: 'user/active', method: RequestMethod.GET },
+        { path: 'user/new-password', method: RequestMethod.PATCH },
       )
       .forRoutes(
         { path: 'user/:id', method: RequestMethod.GET },
