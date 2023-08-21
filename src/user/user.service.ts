@@ -168,8 +168,6 @@ export class UserServices {
 
     const url = getFullURL(req).replace('forget-password', 'new-password');
 
-    console.log(url);
-
     const email = {
       body: {
         name: user.name,
