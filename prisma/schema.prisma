@@ -20,6 +20,7 @@ model Client {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   cart      Cart?
+  resetToken String? 
 }
 
 model Product {

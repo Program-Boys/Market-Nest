@@ -7,6 +7,7 @@ import {
   Body,
   Req,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { UserServices } from './user.service';
@@ -66,15 +67,21 @@ export class UserController {
     @Res() res: Response,
     @Req() req: Request,
   ) {
-    const forgetPassword = await this.userService.forgetPassword(body, req);
+    await this.userService.forgetPassword(body, req);
 
-    return res.status(200).json(forgetPassword);
+    return res.status(200).json({
+      message: 'Email was sent',
+    });
   }
 
   @IsPublic()
-  @Post('new-password/:token')
-  async newPassword(@Res() res: Response, @Req() req: Request) {
-    const { token } = req.params;
+  @Patch('new-password')
+  async newPassword(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Query('token') token: string,
+  ) {
+    console.log(token);
     const { password } = req.body;
 
     const newPassword = await this.userService.newPassword(password, token);
