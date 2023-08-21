@@ -29,4 +29,5 @@ export const MP_SELECT_GET_USER = {
       },
     },
   },
+  resetToken: true,
 };
