@@ -10,7 +10,10 @@ import {
   MP_SELECT_USER,
 } from '../utils/queries/user.utils';
 import validateCpf from './functions/validateCpf';
-import { MP_USER_NOT_FOUND } from 'src/utils/return-messages/user-returns.utils';
+import {
+  MP_EXPIRED_TOKEN,
+  MP_USER_NOT_FOUND,
+} from 'src/utils/return-messages/user-returns.utils';
 import { JwtService, JwtVerifyOptions } from '@nestjs/jwt';
 import { Request } from 'express';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -190,7 +193,7 @@ export class UserServices {
     return mailBody;
   }
 
-  async sendMail(user: IUser, req: Request) {
+  async sendMail(user: IUser, req: Request): Promise<void> {
     const htmlBody = this.createEmailTemplate(user, req);
 
     await this.mailer.sendMail({
@@ -199,6 +202,8 @@ export class UserServices {
       subject: 'Reset your password',
       html: htmlBody,
     });
+
+    return;
   }
 
   async forgetPassword(email: UserForgetBodyDTO, req: Request): Promise<void> {
@@ -213,49 +218,54 @@ export class UserServices {
       id: findUser.id,
     };
 
-    const tokenNewPassword = this.jwtService.sign(payload);
+    const tokenNewPassword = await this.jwtService.signAsync(payload);
 
-    await this.prisma.client.update({
+    const userWithToken = await this.prisma.client.update({
       where: {
         id: findUser.id,
       },
       data: {
+        updatedAt: new Date(),
         resetToken: tokenNewPassword,
       },
     });
 
-    await this.sendMail(findUser, req);
+    await this.sendMail(userWithToken, req);
 
     return;
   }
 
   async newPassword(password: string, token: string): Promise<string> {
-    const decoded = this.jwtService.verify(
-      token,
-      process.env.JWT_SECRET as JwtVerifyOptions,
-    );
+    try {
+      const decoded = this.jwtService.verify(
+        token,
+        process.env.JWT_SECRET_NEW_PASSWORD as JwtVerifyOptions,
+      );
 
-    console.log(decoded);
+      const findUser = await this.prisma.client.findFirst({
+        where: {
+          id: decoded.id,
+        },
+      });
 
-    const findUser = await this.prisma.client.findFirst({
-      where: {
-        id: decoded.id,
-      },
-    });
+      if (!findUser) throw new HttpException(MP_USER_NOT_FOUND, 404);
 
-    if (!findUser) throw new HttpException(MP_USER_NOT_FOUND, 404);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+      await this.prisma.client.update({
+        where: { id: findUser.id },
+        data: {
+          password: hashedPassword,
+          updatedAt: new Date(),
+          resetToken: null,
+        },
+      });
 
-    await this.prisma.client.update({
-      where: { id: findUser.id },
-      data: {
-        password: hashedPassword,
-        updatedAt: new Date(),
-        resetToken: null,
-      },
-    });
-
-    return 'Password updated with success';
+      return 'Password updated with success';
+    } catch (err) {
+      if (err) {
+        throw new HttpException(MP_EXPIRED_TOKEN, 400);
+      }
+    }
   }
 }
