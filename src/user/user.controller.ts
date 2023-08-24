@@ -81,7 +81,6 @@ export class UserController {
     @Req() req: Request,
     @Query('token') token: string,
   ) {
-    console.log(token);
     const { password } = req.body;
 
     const newPassword = await this.userService.newPassword(password, token);

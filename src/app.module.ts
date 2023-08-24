@@ -7,9 +7,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { CreateUserModule } from './models/user/CreateUser.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     MailerModule.forRoot({
       transport: {
         host: 'smtp.gmail.com',
